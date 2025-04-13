@@ -771,6 +771,94 @@
             border-color: var(--primary-color);
         }
 
+        /* Server creation modal */
+        .server-creation {
+            text-align: center;
+        }
+
+        .server-creation-options {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin: 16px 0;
+        }
+
+        .server-creation-option {
+            display: flex;
+            align-items: center;
+            padding: 16px;
+            border-radius: 8px;
+            background-color: var(--darker-bg);
+            cursor: pointer;
+        }
+
+        .server-creation-option:hover {
+            background-color: rgba(79, 84, 92, 0.4);
+        }
+
+        .server-creation-option i {
+            font-size: 24px;
+            margin-right: 16px;
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--dark-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .server-creation-option-content {
+            text-align: left;
+        }
+
+        .server-creation-option-title {
+            font-weight: 500;
+            margin-bottom: 4px;
+        }
+
+        .server-creation-option-description {
+            color: var(--text-tertiary);
+            font-size: 14px;
+        }
+
+        /* Server customization */
+        .server-customization {
+            text-align: center;
+        }
+
+        .server-icon-preview {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background-color: var(--darker-bg);
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .server-icon-preview img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .server-icon-preview i {
+            font-size: 32px;
+        }
+
+        .server-icon-upload {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
         /* Responsive */
         @media (max-width: 1200px) {
             .members-sidebar {
@@ -900,26 +988,14 @@
     <!-- Main App (shown when authenticated) -->
     <div id="appContainer" style="display: none;">
         <!-- Server sidebar -->
-        <div class="server-sidebar">
-            <div class="server-icon active">
+        <div class="server-sidebar" id="serverSidebar">
+            <div class="server-icon active" data-server="home">
                 <i class="fas fa-home"></i>
                 <div class="server-notification"></div>
             </div>
             <div class="server-separator"></div>
-            <div class="server-icon has-notification">
-                <img src="https://via.placeholder.com/32" alt="Server">
-                <div class="server-notification"></div>
-            </div>
-            <div class="server-icon">
-                <img src="https://via.placeholder.com/32" alt="Server">
-            </div>
-            <div class="server-icon">
-                <img src="https://via.placeholder.com/32" alt="Server">
-            </div>
-            <div class="server-icon">
-                <img src="https://via.placeholder.com/32" alt="Server">
-            </div>
-            <div class="server-icon add-server">
+            <!-- Servers will be added here dynamically -->
+            <div class="server-icon add-server" id="addServerBtn">
                 <i class="fas fa-plus"></i>
             </div>
             <div class="server-icon discover-servers">
@@ -928,267 +1004,83 @@
         </div>
 
         <!-- Channel sidebar -->
-        <div class="channel-sidebar">
-            <div class="server-header">
-                <span>Convospace</span>
+        <div class="channel-sidebar" id="channelSidebar">
+            <div class="server-header" id="serverHeader">
+                <span id="currentServerName">Loading...</span>
                 <i class="fas fa-chevron-down"></i>
             </div>
-
-            <div class="channel-category">
-                <span>Text Channels</span>
-                <i class="fas fa-plus"></i>
-            </div>
-            <div class="channel-item active">
-                <i class="fas fa-hashtag"></i>
-                <span>general</span>
-            </div>
-            <div class="channel-item unread">
-                <i class="fas fa-hashtag"></i>
-                <span>random</span>
-            </div>
-            <div class="channel-item mention" data-mentions="3">
-                <i class="fas fa-hashtag"></i>
-                <span>help</span>
-            </div>
-
-            <div class="channel-category">
-                <span>Voice Channels</span>
-                <i class="fas fa-plus"></i>
-            </div>
-            <div class="channel-item">
-                <i class="fas fa-volume-up"></i>
-                <span>General</span>
-            </div>
-            <div class="channel-item">
-                <i class="fas fa-volume-up"></i>
-                <span>Gaming</span>
-            </div>
-            <div class="channel-item">
-                <i class="fas fa-volume-up"></i>
-                <span>Music</span>
-            </div>
-
+            <!-- Channels will be added here dynamically -->
             <div class="user-section">
-                <div class="user-avatar">
-                    <img src="https://via.placeholder.com/32" alt="User">
-                    <div class="user-status"></div>
+                <div class="user-avatar" id="userAvatar">
+                    <img src="https://via.placeholder.com/32" alt="User" id="userAvatarImg">
+                    <div class="user-status" id="userStatus"></div>
                 </div>
-                <div class="user-info">
-                    <div class="username">Username</div>
-                    <div class="user-tag">#1234</div>
+                <div class="user-info" id="userInfo">
+                    <div class="username" id="usernameDisplay">Username</div>
+                    <div class="user-tag" id="userTagDisplay">#1234</div>
                 </div>
                 <div class="user-controls">
-                    <i class="fas fa-microphone"></i>
-                    <i class="fas fa-headphones"></i>
-                    <i class="fas fa-cog"></i>
+                    <i class="fas fa-microphone" id="micBtn"></i>
+                    <i class="fas fa-headphones" id="headphonesBtn"></i>
+                    <i class="fas fa-cog" id="settingsBtn"></i>
                 </div>
             </div>
         </div>
 
         <!-- Main content -->
         <div class="main-content">
-            <div class="channel-header">
-                <div class="channel-name">
-                    <i class="fas fa-hashtag"></i> general
+            <div class="channel-header" id="channelHeader">
+                <div class="channel-name" id="channelNameDisplay">
+                    <i class="fas fa-hashtag"></i> <span id="channelNameText">general</span>
                 </div>
-                <div class="channel-topic">
-                    Welcome to the general channel! This is where everyone can chat.
+                <div class="channel-topic" id="channelTopicDisplay">
+                    Loading channel topic...
                 </div>
                 <div class="channel-toolbar">
-                    <i class="fas fa-search tooltip">
+                    <i class="fas fa-search tooltip" id="searchBtn">
                         <span class="tooltiptext">Search</span>
                     </i>
-                    <i class="fas fa-inbox tooltip">
+                    <i class="fas fa-inbox tooltip" id="inboxBtn">
                         <span class="tooltiptext">Inbox</span>
                     </i>
-                    <i class="fas fa-question-circle tooltip">
+                    <i class="fas fa-question-circle tooltip" id="helpBtn">
                         <span class="tooltiptext">Help</span>
                     </i>
-                    <i class="fas fa-at tooltip">
+                    <i class="fas fa-at tooltip" id="mentionsBtn">
                         <span class="tooltiptext">Mentions</span>
                     </i>
                 </div>
             </div>
 
             <div class="channel-messages" id="messageContainer">
-                <div class="message">
-                    <div class="message-avatar">
-                        <img src="https://via.placeholder.com/40" alt="User">
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">JohnDoe</div>
-                            <div class="message-timestamp">Today at 12:34 PM</div>
-                        </div>
-                        <div class="message-text">
-                            Hey everyone! Welcome to our new Convospace server. Feel free to introduce yourself!
-                        </div>
-                        <div class="message-actions">
-                            <div class="message-action">
-                                <i class="far fa-smile"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-reply"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </div>
-                        </div>
-                        <div class="message-reactions">
-                            <div class="message-reaction">
-                                <span>👍</span>
-                                <span class="message-reaction-count">3</span>
-                            </div>
-                            <div class="message-reaction">
-                                <span>😄</span>
-                                <span class="message-reaction-count">2</span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="message">
-                    <div class="message-avatar">
-                        <img src="https://via.placeholder.com/40" alt="User">
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">JaneSmith</div>
-                            <div class="message-timestamp">Today at 12:45 PM</div>
-                        </div>
-                        <div class="message-text">
-                            Hi John! Thanks for setting this up. I'm Jane, a web developer from New York. Looking forward to chatting with everyone here!
-                        </div>
-                        <div class="message-actions">
-                            <div class="message-action">
-                                <i class="far fa-smile"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-reply"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="message">
-                    <div class="message-avatar">
-                        <img src="https://via.placeholder.com/40" alt="User">
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">AlexJohnson</div>
-                            <div class="message-timestamp">Today at 1:02 PM</div>
-                        </div>
-                        <div class="message-text">
-                            Hey folks! I'm Alex. This platform looks great. How's everyone doing today?
-                            <br><br>
-                            Also, check out this cool feature:
-                            <br>
-                            <code>console.log('Hello Convospace!');</code>
-                        </div>
-                        <div class="message-actions">
-                            <div class="message-action">
-                                <i class="far fa-smile"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-reply"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </div>
-                        </div>
-                    </div>
+                <!-- Messages will be added here dynamically -->
+                <div class="welcome-message">
+                    <h3>Welcome to #<span id="welcomeChannelName">general</span>!</h3>
+                    <p>This is the start of the #<span id="welcomeChannelName2">general</span> channel.</p>
                 </div>
             </div>
 
             <div class="channel-input">
                 <div class="message-input-container">
-                    <textarea class="message-input" placeholder="Message #general" rows="1" id="messageInput"></textarea>
+                    <textarea class="message-input" id="messageInput" placeholder="Message #general" rows="1"></textarea>
                     <div class="message-input-buttons">
-                        <i class="fas fa-gift"></i>
-                        <i class="fas fa-grin"></i>
-                        <i class="fas fa-at"></i>
+                        <i class="fas fa-gift" id="giftBtn"></i>
+                        <i class="fas fa-grin" id="emojiBtn"></i>
+                        <i class="fas fa-at" id="mentionBtn"></i>
                     </div>
                 </div>
             </div>
         </div>
 
         <!-- Members sidebar -->
-        <div class="members-sidebar">
+        <div class="members-sidebar" id="membersSidebar">
             <div class="member-section">
-                <div class="member-section-title">Online — 3</div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status online"></div>
-                    </div>
-                    <div class="member-info">
-                        <div class="member-name">JohnDoe</div>
-                        <div class="member-activity">Playing Rocket League</div>
-                    </div>
-                </div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status online"></div>
-                    </div>
-                    <div class="member-info">
-                        <div class="member-name">JaneSmith</div>
-                        <div class="member-activity">Visual Studio Code</div>
-                    </div>
-                </div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status online"></div>
-                    </div>
-                    <div class="member-info">
-                        <div class="member-name">AlexJohnson</div>
-                        <div class="member-activity">Listening to Spotify</div>
-                    </div>
-                </div>
+                <div class="member-section-title" id="onlineMembersTitle">Online — 0</div>
+                <!-- Online members will be added here dynamically -->
             </div>
-
             <div class="member-section">
-                <div class="member-section-title">Offline — 5</div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status offline"></div>
-                    </div>
-                    <div class="member-name">MikeBrown</div>
-                </div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status offline"></div>
-                    </div>
-                    <div class="member-name">SarahWilson</div>
-                </div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status offline"></div>
-                    </div>
-                    <div class="member-name">DavidLee</div>
-                </div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status offline"></div>
-                    </div>
-                    <div class="member-name">EmilyDavis</div>
-                </div>
-                <div class="member-item">
-                    <div class="member-avatar">
-                        <img src="https://via.placeholder.com/32" alt="User">
-                        <div class="member-status offline"></div>
-                    </div>
-                    <div class="member-name">ChrisTaylor</div>
-                </div>
+                <div class="member-section-title" id="offlineMembersTitle">Offline — 0</div>
+                <!-- Offline members will be added here dynamically -->
             </div>
         </div>
     </div>
@@ -1227,6 +1119,30 @@
         </div>
     </div>
 
+    <!-- Server Creation Modal -->
+    <div class="modal-overlay" id="serverCreationModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title">Customize your server</div>
+                <div class="modal-close" id="serverCreationClose">&times;</div>
+            </div>
+            <div class="modal-body server-customization">
+                <div class="server-icon-preview" id="serverIconPreview">
+                    <i class="fas fa-server"></i>
+                    <input type="file" id="serverIconUpload" class="server-icon-upload" accept="image/*">
+                </div>
+                <div class="form-group">
+                    <label for="serverName" class="form-label">Server name</label>
+                    <input type="text" class="form-control" id="serverName" placeholder="Enter server name">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="serverCreationBackBtn">Back</button>
+                <button class="btn btn-primary" id="serverCreationCreateBtn">Create</button>
+            </div>
+        </div>
+    </div>
+
     <!-- User Settings Modal -->
     <div class="modal-overlay" id="settingsModal" style="display: none;">
         <div class="modal" style="width: 600px;">
@@ -1254,8 +1170,9 @@
                         <h3 style="margin-bottom: 16px;">My Account</h3>
                         
                         <div style="display: flex; align-items: center; margin-bottom: 16px;">
-                            <div style="width: 80px; height: 80px; border-radius: 50%; background-color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin-right: 16px;">
-                                <i class="fas fa-user" style="font-size: 32px;"></i>
+                            <div class="server-icon-preview" id="userAvatarPreview" style="width: 80px; height: 80px; margin-right: 16px;">
+                                <img src="https://via.placeholder.com/80" id="userAvatarPreviewImg">
+                                <input type="file" id="userAvatarUpload" class="server-icon-upload" accept="image/*">
                             </div>
                             <div>
                                 <div style="margin-bottom: 8px;">
@@ -1269,17 +1186,17 @@
                         
                         <div class="form-group">
                             <label for="settingsUsername" class="form-label">Username</label>
-                            <input type="text" class="form-control" id="settingsUsername" value="Username">
+                            <input type="text" class="form-control" id="settingsUsername">
                         </div>
                         
                         <div class="form-group">
                             <label for="settingsTag" class="form-label">Tag</label>
-                            <input type="text" class="form-control" id="settingsTag" value="#1234">
+                            <input type="text" class="form-control" id="settingsTag">
                         </div>
                         
                         <div class="form-group">
                             <label for="settingsEmail" class="form-label">Email</label>
-                            <input type="email" class="form-control" id="settingsEmail" value="user@example.com">
+                            <input type="email" class="form-control" id="settingsEmail">
                         </div>
                         
                         <div class="form-group">
@@ -1340,15 +1257,57 @@
         const authSubmitBtn = document.getElementById('authSubmitBtn');
         const messageInput = document.getElementById('messageInput');
         const messageContainer = document.getElementById('messageContainer');
+        const serverSidebar = document.getElementById('serverSidebar');
+        const channelSidebar = document.getElementById('channelSidebar');
+        const membersSidebar = document.getElementById('membersSidebar');
+        const serverHeader = document.getElementById('serverHeader');
+        const currentServerName = document.getElementById('currentServerName');
+        const channelHeader = document.getElementById('channelHeader');
+        const channelNameDisplay = document.getElementById('channelNameDisplay');
+        const channelNameText = document.getElementById('channelNameText');
+        const channelTopicDisplay = document.getElementById('channelTopicDisplay');
+        const userAvatar = document.getElementById('userAvatar');
+        const userAvatarImg = document.getElementById('userAvatarImg');
+        const usernameDisplay = document.getElementById('usernameDisplay');
+        const userTagDisplay = document.getElementById('userTagDisplay');
+        const userStatus = document.getElementById('userStatus');
+        const addServerBtn = document.getElementById('addServerBtn');
+        const settingsBtn = document.getElementById('settingsBtn');
         const settingsModal = document.getElementById('settingsModal');
         const settingsModalClose = document.getElementById('settingsModalClose');
         const settingsCancelBtn = document.getElementById('settingsCancelBtn');
         const settingsSaveBtn = document.getElementById('settingsSaveBtn');
-        const cogIcon = document.querySelector('.fa-cog');
+        const settingsUsername = document.getElementById('settingsUsername');
+        const settingsTag = document.getElementById('settingsTag');
+        const settingsEmail = document.getElementById('settingsEmail');
+        const settingsPassword = document.getElementById('settingsPassword');
+        const userAvatarPreview = document.getElementById('userAvatarPreview');
+        const userAvatarPreviewImg = document.getElementById('userAvatarPreviewImg');
+        const userAvatarUpload = document.getElementById('userAvatarUpload');
+        const serverCreationModal = document.getElementById('serverCreationModal');
+        const serverCreationClose = document.getElementById('serverCreationClose');
+        const serverCreationBackBtn = document.getElementById('serverCreationBackBtn');
+        const serverCreationCreateBtn = document.getElementById('serverCreationCreateBtn');
+        const serverIconPreview = document.getElementById('serverIconPreview');
+        const serverIconUpload = document.getElementById('serverIconUpload');
+        const serverName = document.getElementById('serverName');
+        const onlineMembersTitle = document.getElementById('onlineMembersTitle');
+        const offlineMembersTitle = document.getElementById('offlineMembersTitle');
+        const welcomeChannelName = document.getElementById('welcomeChannelName');
+        const welcomeChannelName2 = document.getElementById('welcomeChannelName2');
 
         // App state
         let isLoginMode = true;
         let currentUser = null;
+        let currentServer = 'home';
+        let currentChannel = 'general';
+        let servers = {};
+        let channels = {};
+        let members = {};
+        let messages = {};
+        let userData = {};
+        let serverIconFile = null;
+        let userAvatarFile = null;
 
         // Initialize the app
         function init() {
@@ -1380,17 +1339,36 @@
                 }
             });
 
-            // Settings modal
-            cogIcon.addEventListener('click', () => {
-                settingsModal.style.display = 'flex';
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = (this.scrollHeight) + 'px';
             });
-            settingsModalClose.addEventListener('click', () => {
-                settingsModal.style.display = 'none';
-            });
-            settingsCancelBtn.addEventListener('click', () => {
-                settingsModal.style.display = 'none';
-            });
+
+            // Server creation
+            addServerBtn.addEventListener('click', showServerCreationModal);
+            serverCreationClose.addEventListener('click', hideServerCreationModal);
+            serverCreationBackBtn.addEventListener('click', hideServerCreationModal);
+            serverCreationCreateBtn.addEventListener('click', createServer);
+            serverIconUpload.addEventListener('change', handleServerIconUpload);
+            serverIconPreview.addEventListener('click', () => serverIconUpload.click());
+
+            // User settings
+            settingsBtn.addEventListener('click', showSettingsModal);
+            settingsModalClose.addEventListener('click', hideSettingsModal);
+            settingsCancelBtn.addEventListener('click', hideSettingsModal);
             settingsSaveBtn.addEventListener('click', saveSettings);
+            userAvatarUpload.addEventListener('change', handleUserAvatarUpload);
+            userAvatarPreview.addEventListener('click', () => userAvatarUpload.click());
+
+            // Server selection
+            serverHeader.addEventListener('click', () => {
+                // In a full implementation, this would show server settings
+                console.log('Show server settings for:', currentServer);
+            });
+
+            // User avatar click
+            userAvatar.addEventListener('click', showSettingsModal);
         }
 
         // Check auth state
@@ -1409,6 +1387,303 @@
                     welcomeScreen.style.display = 'flex';
                     appContainer.style.display = 'none';
                 }
+            });
+        }
+
+        // Load user data
+        function loadUserData(userId) {
+            // Load user profile
+            database.ref('users/' + userId).on('value', (snapshot) => {
+                userData = snapshot.val() || {};
+                
+                // Update UI with user data
+                usernameDisplay.textContent = userData.username || 'User';
+                userTagDisplay.textContent = '#' + (userData.tag || '0000');
+                settingsUsername.value = userData.username || '';
+                settingsTag.value = userData.tag || '';
+                settingsEmail.value = userData.email || '';
+                
+                // Load avatar if exists
+                if (userData.avatar) {
+                    userAvatarImg.src = userData.avatar;
+                    userAvatarPreviewImg.src = userData.avatar;
+                }
+            });
+
+            // Load servers
+            database.ref('servers').orderByChild('members/' + userId).equalTo(true).on('value', (snapshot) => {
+                servers = snapshot.val() || {};
+                renderServers();
+            });
+
+            // Set default server and channel
+            switchServer('home');
+        }
+
+        // Render servers in sidebar
+        function renderServers() {
+            // Clear existing servers (except home and buttons)
+            while (serverSidebar.children.length > 3) {
+                serverSidebar.removeChild(serverSidebar.lastChild);
+            }
+            
+            // Add user's servers
+            for (const serverId in servers) {
+                const server = servers[serverId];
+                const serverIcon = document.createElement('div');
+                serverIcon.className = 'server-icon';
+                serverIcon.dataset.server = serverId;
+                
+                if (server.icon) {
+                    serverIcon.innerHTML = `<img src="${server.icon}" alt="${server.name}">`;
+                } else {
+                    const initials = server.name.split(' ').map(word => word[0]).join('').toUpperCase();
+                    serverIcon.innerHTML = `<span>${initials}</span>`;
+                }
+                
+                serverIcon.addEventListener('click', () => switchServer(serverId));
+                serverSidebar.insertBefore(serverIcon, serverSidebar.children[serverSidebar.children.length - 2]);
+            }
+        }
+
+        // Switch to a different server
+        function switchServer(serverId) {
+            // Update active state
+            document.querySelectorAll('.server-icon').forEach(icon => {
+                icon.classList.remove('active');
+                if (icon.dataset.server === serverId) {
+                    icon.classList.add('active');
+                }
+            });
+            
+            currentServer = serverId;
+            
+            if (serverId === 'home') {
+                // Home server (default channels)
+                currentServerName.textContent = 'Home';
+                renderChannels({
+                    'general': { name: 'general', type: 'text' },
+                    'random': { name: 'random', type: 'text' },
+                    'help': { name: 'help', type: 'text' },
+                    'voice': { name: 'General', type: 'voice' }
+                });
+                switchChannel('general');
+            } else {
+                // Custom server
+                const server = servers[serverId];
+                currentServerName.textContent = server.name;
+                
+                // Load server channels
+                database.ref('channels').orderByChild('server').equalTo(serverId).on('value', (snapshot) => {
+                    channels = snapshot.val() || {};
+                    renderChannels(channels);
+                    
+                    // Switch to first channel or general
+                    const firstChannel = Object.keys(channels).find(key => channels[key].type === 'text') || 'general';
+                    switchChannel(firstChannel);
+                });
+                
+                // Load server members
+                loadServerMembers(serverId);
+            }
+        }
+
+        // Render channels in sidebar
+        function renderChannels(channels) {
+            // Clear existing channels
+            while (channelSidebar.children.length > 1) {
+                channelSidebar.removeChild(channelSidebar.lastChild);
+            }
+            
+            // Add text channels category
+            const textChannels = Object.values(channels).filter(c => c.type === 'text');
+            if (textChannels.length > 0) {
+                const category = document.createElement('div');
+                category.className = 'channel-category';
+                category.innerHTML = '<span>Text Channels</span><i class="fas fa-plus"></i>';
+                channelSidebar.appendChild(category);
+                
+                // Add text channels
+                textChannels.forEach(channel => {
+                    const channelItem = document.createElement('div');
+                    channelItem.className = 'channel-item';
+                    channelItem.dataset.channel = channel.id || channel.name;
+                    channelItem.innerHTML = `<i class="fas fa-hashtag"></i><span>${channel.name}</span>`;
+                    channelItem.addEventListener('click', () => switchChannel(channel.id || channel.name));
+                    channelSidebar.appendChild(channelItem);
+                });
+            }
+            
+            // Add voice channels category
+            const voiceChannels = Object.values(channels).filter(c => c.type === 'voice');
+            if (voiceChannels.length > 0) {
+                const category = document.createElement('div');
+                category.className = 'channel-category';
+                category.innerHTML = '<span>Voice Channels</span><i class="fas fa-plus"></i>';
+                channelSidebar.appendChild(category);
+                
+                // Add voice channels
+                voiceChannels.forEach(channel => {
+                    const channelItem = document.createElement('div');
+                    channelItem.className = 'channel-item';
+                    channelItem.dataset.channel = channel.id || channel.name;
+                    channelItem.innerHTML = `<i class="fas fa-volume-up"></i><span>${channel.name}</span>`;
+                    channelItem.addEventListener('click', () => switchChannel(channel.id || channel.name));
+                    channelSidebar.appendChild(channelItem);
+                });
+            }
+        }
+
+        // Switch to a different channel
+        function switchChannel(channelId) {
+            // Update active state
+            document.querySelectorAll('.channel-item').forEach(item => {
+                item.classList.remove('active');
+                if (item.dataset.channel === channelId) {
+                    item.classList.add('active');
+                }
+            });
+            
+            currentChannel = channelId;
+            
+            // Update channel header
+            const channel = channels[channelId] || { name: channelId, type: 'text' };
+            channelNameText.textContent = channel.name;
+            welcomeChannelName.textContent = channel.name;
+            welcomeChannelName2.textContent = channel.name;
+            channelTopicDisplay.textContent = channel.topic || 'No topic set';
+            
+            // Update message input placeholder
+            messageInput.placeholder = `Message #${channel.name}`;
+            
+            // Load messages for this channel
+            loadMessages(channelId);
+        }
+
+        // Load messages for a channel
+        function loadMessages(channelId) {
+            // Clear existing messages
+            messageContainer.innerHTML = '';
+            
+            // Add welcome message
+            const welcomeMessage = document.createElement('div');
+            welcomeMessage.className = 'welcome-message';
+            welcomeMessage.innerHTML = `
+                <h3>Welcome to #<span>${channelId}</span>!</h3>
+                <p>This is the start of the #<span>${channelId}</span> channel.</p>
+            `;
+            messageContainer.appendChild(welcomeMessage);
+            
+            // Load messages from Firebase
+            database.ref('messages/' + channelId).orderByChild('timestamp').limitToLast(100).on('value', (snapshot) => {
+                const messages = snapshot.val() || {};
+                renderMessages(messages);
+            });
+        }
+
+        // Render messages
+        function renderMessages(messages) {
+            // Clear existing messages (except welcome message)
+            while (messageContainer.children.length > 1) {
+                messageContainer.removeChild(messageContainer.lastChild);
+            }
+            
+            // Add messages to the container
+            Object.values(messages).forEach(message => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message';
+                messageElement.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="${message.avatar || 'https://via.placeholder.com/40'}" alt="${message.author}">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-author">${message.author}</div>
+                            <div class="message-timestamp">${formatTimestamp(message.timestamp)}</div>
+                        </div>
+                        <div class="message-text">${message.text}</div>
+                        <div class="message-actions">
+                            <div class="message-action">
+                                <i class="far fa-smile"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messageContainer.appendChild(messageElement);
+            });
+            
+            // Scroll to bottom
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        // Load server members
+        function loadServerMembers(serverId) {
+            const server = servers[serverId];
+            if (!server) return;
+            
+            // Clear existing members
+            while (membersSidebar.children.length > 0) {
+                membersSidebar.removeChild(membersSidebar.lastChild);
+            }
+            
+            // Create online members section
+            const onlineSection = document.createElement('div');
+            onlineSection.className = 'member-section';
+            onlineSection.innerHTML = '<div class="member-section-title">Online — 0</div>';
+            membersSidebar.appendChild(onlineSection);
+            
+            // Create offline members section
+            const offlineSection = document.createElement('div');
+            offlineSection.className = 'member-section';
+            offlineSection.innerHTML = '<div class="member-section-title">Offline — 0</div>';
+            membersSidebar.appendChild(offlineSection);
+            
+            // Load members data
+            database.ref('users').orderByChild(`servers/${serverId}`).equalTo(true).on('value', (snapshot) => {
+                const allMembers = snapshot.val() || {};
+                let onlineCount = 0;
+                let offlineCount = 0;
+                
+                // Clear sections
+                onlineSection.innerHTML = '<div class="member-section-title">Online — 0</div>';
+                offlineSection.innerHTML = '<div class="member-section-title">Offline — 0</div>';
+                
+                // Add members to appropriate sections
+                for (const userId in allMembers) {
+                    const member = allMembers[userId];
+                    const isOnline = Math.random() > 0.3; // Simulate online status
+                    
+                    const memberItem = document.createElement('div');
+                    memberItem.className = 'member-item';
+                    memberItem.innerHTML = `
+                        <div class="member-avatar">
+                            <img src="${member.avatar || 'https://via.placeholder.com/32'}" alt="${member.username}">
+                            <div class="member-status ${isOnline ? 'online' : 'offline'}"></div>
+                        </div>
+                        <div class="member-info">
+                            <div class="member-name">${member.username}</div>
+                            ${isOnline ? '<div class="member-activity">Playing Convospace</div>' : ''}
+                        </div>
+                    `;
+                    
+                    if (isOnline) {
+                        onlineSection.appendChild(memberItem);
+                        onlineCount++;
+                    } else {
+                        offlineSection.appendChild(memberItem);
+                        offlineCount++;
+                    }
+                }
+                
+                // Update counts
+                onlineSection.querySelector('.member-section-title').textContent = `Online — ${onlineCount}`;
+                offlineSection.querySelector('.member-section-title').textContent = `Offline — ${offlineCount}`;
             });
         }
 
@@ -1470,8 +1745,12 @@
                         return database.ref('users/' + userCredential.user.uid).set({
                             username: username,
                             email: email,
+                            tag: Math.floor(1000 + Math.random() * 9000), // Random 4-digit tag
                             createdAt: firebase.database.ServerValue.TIMESTAMP,
-                            tag: Math.floor(1000 + Math.random() * 9000) // Random 4-digit tag
+                            status: 'online',
+                            servers: {
+                                'home': true
+                            }
                         });
                     })
                     .then(() => {
@@ -1484,73 +1763,214 @@
             }
         }
 
-        // Load user data
-        function loadUserData(userId) {
-            database.ref('users/' + userId).on('value', (snapshot) => {
-                const userData = snapshot.val();
-                if (userData) {
-                    // Update UI with user data
-                    const usernameElements = document.querySelectorAll('.username');
-                    usernameElements.forEach(el => {
-                        el.textContent = userData.username;
-                    });
-
-                    const tagElements = document.querySelectorAll('.user-tag');
-                    tagElements.forEach(el => {
-                        el.textContent = '#' + userData.tag;
-                    });
-                }
-            });
-
-            // Load messages
-            database.ref('messages/general').on('value', (snapshot) => {
-                const messages = snapshot.val() || [];
-                renderMessages(messages);
-            });
+        // Show server creation modal
+        function showServerCreationModal() {
+            serverCreationModal.style.display = 'flex';
+            serverName.value = '';
+            serverIconPreview.innerHTML = '<i class="fas fa-server"></i>';
+            serverIconFile = null;
         }
 
-        // Render messages
-        function renderMessages(messages) {
-            messageContainer.innerHTML = '';
+        // Hide server creation modal
+        function hideServerCreationModal() {
+            serverCreationModal.style.display = 'none';
+        }
+
+        // Handle server icon upload
+        function handleServerIconUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
             
-            messages.forEach((message, index) => {
-                const messageElement = document.createElement('div');
-                messageElement.className = 'message';
-                messageElement.innerHTML = `
-                    <div class="message-avatar">
-                        <img src="${message.avatar || 'https://via.placeholder.com/40'}" alt="User">
-                    </div>
-                    <div class="message-content">
-                        <div class="message-header">
-                            <div class="message-author">${message.author}</div>
-                            <div class="message-timestamp">${formatTimestamp(message.timestamp)}</div>
-                        </div>
-                        <div class="message-text">${message.text}</div>
-                        <div class="message-actions">
-                            <div class="message-action">
-                                <i class="far fa-smile"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-reply"></i>
-                            </div>
-                            <div class="message-action">
-                                <i class="fas fa-ellipsis-h"></i>
-                            </div>
-                        </div>
-                    </div>
-                `;
-                messageContainer.appendChild(messageElement);
-            });
-
-            // Scroll to bottom
-            messageContainer.scrollTop = messageContainer.scrollHeight;
+            serverIconFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                serverIconPreview.innerHTML = `<img src="${event.target.result}" alt="Server icon">`;
+            };
+            reader.readAsDataURL(file);
         }
 
-        // Format timestamp
-        function formatTimestamp(timestamp) {
-            if (!timestamp) return '';
-            const date = new Date(timestamp);
-            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        // Create new server
+        function createServer() {
+            const name = serverName.value.trim();
+            if (!name) {
+                alert('Please enter a server name');
+                return;
+            }
+            
+            const serverData = {
+                name: name,
+                owner: currentUser.uid,
+                createdAt: firebase.database.ServerValue.TIMESTAMP,
+                members: {
+                    [currentUser.uid]: true
+                }
+            };
+            
+            // Create server in database
+            const newServerRef = database.ref('servers').push();
+            
+            if (serverIconFile) {
+                // Upload icon to storage
+                const uploadTask = storage.ref(`server-icons/${newServerRef.key}`).put(serverIconFile);
+                
+                uploadTask.on('state_changed', 
+                    null, 
+                    (error) => {
+                        console.error('Upload failed:', error);
+                        createServerWithData(newServerRef, serverData);
+                    }, 
+                    () => {
+                        // Get download URL and add to server data
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            serverData.icon = downloadURL;
+                            createServerWithData(newServerRef, serverData);
+                        });
+                    }
+                );
+            } else {
+                createServerWithData(newServerRef, serverData);
+            }
+        }
+
+        // Helper function to create server with data
+        function createServerWithData(serverRef, serverData) {
+            serverRef.set(serverData)
+                .then(() => {
+                    // Add default channels
+                    const generalChannelRef = database.ref('channels').push();
+                    generalChannelRef.set({
+                        name: 'general',
+                        type: 'text',
+                        server: serverRef.key,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    const voiceChannelRef = database.ref('channels').push();
+                    voiceChannelRef.set({
+                        name: 'General',
+                        type: 'voice',
+                        server: serverRef.key,
+                        createdAt: firebase.database.ServerValue.TIMESTAMP
+                    });
+                    
+                    // Add server to user's servers
+                    database.ref(`users/${currentUser.uid}/servers/${serverRef.key}`).set(true);
+                    
+                    hideServerCreationModal();
+                    switchServer(serverRef.key);
+                })
+                .catch((error) => {
+                    console.error('Error creating server:', error);
+                    alert('Failed to create server');
+                });
+        }
+
+        // Show settings modal
+        function showSettingsModal() {
+            settingsModal.style.display = 'flex';
+            settingsUsername.value = userData.username || '';
+            settingsTag.value = userData.tag || '';
+            settingsEmail.value = userData.email || currentUser.email || '';
+            settingsPassword.value = '';
+        }
+
+        // Hide settings modal
+        function hideSettingsModal() {
+            settingsModal.style.display = 'none';
+        }
+
+        // Handle user avatar upload
+        function handleUserAvatarUpload(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            userAvatarFile = file;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                userAvatarPreviewImg.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Save settings
+        function saveSettings() {
+            if (!currentUser) return;
+
+            const updates = {};
+            const username = settingsUsername.value.trim();
+            const tag = settingsTag.value.trim().replace('#', '');
+            const email = settingsEmail.value.trim();
+            const password = settingsPassword.value.trim();
+            
+            // Validate inputs
+            if (username && username !== userData.username) {
+                updates.username = username;
+            }
+            
+            if (tag && tag !== userData.tag) {
+                if (/^\d{4}$/.test(tag)) {
+                    updates.tag = tag;
+                } else {
+                    alert('Tag must be 4 digits');
+                    return;
+                }
+            }
+            
+            // Process avatar upload if exists
+            if (userAvatarFile) {
+                const uploadTask = storage.ref(`user-avatars/${currentUser.uid}`).put(userAvatarFile);
+                
+                uploadTask.on('state_changed', 
+                    null, 
+                    (error) => {
+                        console.error('Avatar upload failed:', error);
+                        saveUserData(updates, email, password);
+                    }, 
+                    () => {
+                        uploadTask.snapshot.ref.getDownloadURL().then((downloadURL) => {
+                            updates.avatar = downloadURL;
+                            saveUserData(updates, email, password);
+                        });
+                    }
+                );
+            } else {
+                saveUserData(updates, email, password);
+            }
+        }
+
+        // Helper function to save user data
+        function saveUserData(updates, email, password) {
+            const promises = [];
+            
+            // Update email if changed
+            if (email && email !== currentUser.email) {
+                promises.push(currentUser.updateEmail(email));
+                updates.email = email;
+            }
+            
+            // Update password if provided
+            if (password) {
+                promises.push(currentUser.updatePassword(password));
+            }
+            
+            // Update user data in database
+            if (Object.keys(updates).length > 0) {
+                promises.push(database.ref(`users/${currentUser.uid}`).update(updates));
+            }
+            
+            Promise.all(promises)
+                .then(() => {
+                    hideSettingsModal();
+                    if (updates.avatar) {
+                        userAvatarImg.src = updates.avatar;
+                    }
+                })
+                .catch((error) => {
+                    console.error('Error updating settings:', error);
+                    alert('Failed to update settings');
+                });
         }
 
         // Send message
@@ -1558,20 +1978,15 @@
             const text = messageInput.value.trim();
             if (!text || !currentUser) return;
 
-            // Get username
-            database.ref('users/' + currentUser.uid).once('value')
-                .then((snapshot) => {
-                    const userData = snapshot.val();
-                    const username = userData?.username || 'Anonymous';
+            const messageData = {
+                author: userData.username || 'Anonymous',
+                text: text,
+                timestamp: firebase.database.ServerValue.TIMESTAMP,
+                uid: currentUser.uid,
+                avatar: userData.avatar || null
+            };
 
-                    // Push new message
-                    return database.ref('messages/general').push({
-                        author: username,
-                        text: text,
-                        timestamp: firebase.database.ServerValue.TIMESTAMP,
-                        uid: currentUser.uid
-                    });
-                })
+            database.ref(`messages/${currentChannel}`).push(messageData)
                 .then(() => {
                     messageInput.value = '';
                     messageInput.style.height = 'auto';
@@ -1581,63 +1996,12 @@
                 });
         }
 
-        // Save settings
-        function saveSettings() {
-            if (!currentUser) return;
-
-            const updates = {};
-            const username = document.getElementById('settingsUsername').value;
-            const tag = document.getElementById('settingsTag').value;
-            const email = document.getElementById('settingsEmail').value;
-            const password = document.getElementById('settingsPassword').value;
-
-            if (username) {
-                updates['username'] = username;
-            }
-
-            if (tag) {
-                updates['tag'] = tag.replace('#', '');
-            }
-
-            if (email && email !== currentUser.email) {
-                currentUser.updateEmail(email)
-                    .then(() => {
-                        updates['email'] = email;
-                        return database.ref('users/' + currentUser.uid).update(updates);
-                    })
-                    .then(() => {
-                        settingsModal.style.display = 'none';
-                    })
-                    .catch((error) => {
-                        console.error('Error updating email:', error);
-                    });
-            }
-
-            if (password) {
-                currentUser.updatePassword(password)
-                    .then(() => {
-                        document.getElementById('settingsPassword').value = '';
-                    })
-                    .catch((error) => {
-                        console.error('Error updating password:', error);
-                    });
-            }
-
-            if (Object.keys(updates).length > 0) {
-                database.ref('users/' + currentUser.uid).update(updates)
-                    .then(() => {
-                        settingsModal.style.display = 'none';
-                    });
-            } else {
-                settingsModal.style.display = 'none';
-            }
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         }
-
-        // Auto-resize textarea
-        messageInput.addEventListener('input', function() {
-            this.style.height = 'auto';
-            this.style.height = (this.scrollHeight) + 'px';
-        });
 
         // Initialize the app
         init();
