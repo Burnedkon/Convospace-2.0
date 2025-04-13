@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convospace - Discord Clone</title>
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-analytics-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.0/firebase-storage-compat.js"></script>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #5865F2;
+            --secondary-color: #404EED;
+            --dark-bg: #36393F;
+            --darker-bg: #2F3136;
+            --darkest-bg: #202225;
+            --text-primary: #FFFFFF;
+            --text-secondary: #B9BBBE;
+            --text-tertiary: #72767D;
+            --success-color: #3BA55C;
+            --danger-color: #ED4245;
+            --warning-color: #FAA61A;
+            --online-color: #3BA55C;
+            --idle-color: #FAA61A;
+            --dnd-color: #ED4245;
+            --offline-color: #747F8D;
+            --notification-color: #F04747;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Roboto', sans-serif;
+        }
+
+        body {
+            background-color: var(--dark-bg);
+            color: var(--text-primary);
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+        }
+
+        /* Server sidebar */
+        .server-sidebar {
+            width: 72px;
+            background-color: var(--darkest-bg);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 12px 0;
+            overflow-y: auto;
+        }
+
+        .server-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            background-color: var(--darker-bg);
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            position: relative;
+        }
+
+        .server-icon:hover {
+            border-radius: 16px;
+            background-color: var(--primary-color);
+        }
+
+        .server-icon.active {
+            border-radius: 16px;
+            background-color: var(--primary-color);
+        }
+
+        .server-icon img {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+        }
+
+        .server-notification {
+            position: absolute;
+            left: -4px;
+            width: 8px;
+            height: 20px;
+            background-color: var(--text-primary);
+            border-radius: 0 4px 4px 0;
+            transition: all 0.2s ease;
+            opacity: 0;
+        }
+
+        .server-icon.has-notification .server-notification {
+            opacity: 1;
+        }
+
+        .server-separator {
+            width: 32px;
+            height: 2px;
+            background-color: var(--dark-bg);
+            margin: 8px 0;
+        }
+
+        .add-server {
+            color: var(--success-color);
+            font-size: 24px;
+        }
+
+        .discover-servers {
+            color: var(--success-color);
+            font-size: 24px;
+        }
+
+        /* Channel sidebar */
+        .channel-sidebar {
+            width: 240px;
+            background-color: var(--darker-bg);
+            display: flex;
+            flex-direction: column;
+        }
+
+        .server-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .server-header:hover {
+            background-color: rgba(79, 84, 92, 0.16);
+        }
+
+        .server-header i {
+            color: var(--text-tertiary);
+        }
+
+        .channel-category {
+            padding: 16px 8px 0 16px;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+        }
+
+        .channel-category:hover {
+            color: var(--text-secondary);
+        }
+
+        .channel-category i {
+            opacity: 0;
+            transition: opacity 0.2s ease;
+        }
+
+        .channel-category:hover i {
+            opacity: 1;
+        }
+
+        .channel-item {
+            padding: 8px 8px 8px 16px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            margin-right: 8px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            position: relative;
+        }
+
+        .channel-item:hover {
+            background-color: rgba(79, 84, 92, 0.32);
+            color: var(--text-primary);
+        }
+
+        .channel-item.active {
+            background-color: rgba(79, 84, 92, 0.6);
+            color: var(--text-primary);
+        }
+
+        .channel-item i {
+            margin-right: 8px;
+            font-size: 18px;
+        }
+
+        .channel-item.hashtag {
+            font-size: 20px;
+            margin-right: 6px;
+        }
+
+        .channel-item.unread::before {
+            content: "";
+            position: absolute;
+            left: 2px;
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-primary);
+            border-radius: 50%;
+        }
+
+        .channel-item.mention::after {
+            content: attr(data-mentions);
+            position: absolute;
+            right: 8px;
+            background-color: var(--notification-color);
+            color: white;
+            font-size: 12px;
+            padding: 2px 6px;
+            border-radius: 10px;
+        }
+
+        .user-section {
+            margin-top: auto;
+            background-color: var(--dark-bg);
+            padding: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .user-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            margin-right: 8px;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .user-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .user-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: var(--online-color);
+            border: 2px solid var(--dark-bg);
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+        }
+
+        .user-info {
+            flex: 1;
+            cursor: pointer;
+        }
+
+        .username {
+            font-weight: 500;
+            font-size: 14px;
+            margin-bottom: 2px;
+        }
+
+        .user-tag {
+            font-size: 12px;
+            color: var(--text-tertiary);
+        }
+
+        .user-controls {
+            color: var(--text-tertiary);
+        }
+
+        .user-controls i {
+            margin-left: 8px;
+            cursor: pointer;
+        }
+
+        .user-controls i:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Main content */
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .channel-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            box-shadow: 0 1px 0 rgba(0, 0, 0, 0.1);
+            display: flex;
+            align-items: center;
+            z-index: 1;
+        }
+
+        .channel-name {
+            font-weight: 500;
+        }
+
+        .channel-topic {
+            margin-left: 8px;
+            color: var(--text-tertiary);
+            font-size: 14px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 500px;
+        }
+
+        .channel-toolbar {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            color: var(--text-tertiary);
+        }
+
+        .channel-toolbar i {
+            margin-left: 16px;
+            cursor: pointer;
+        }
+
+        .channel-toolbar i:hover {
+            color: var(--text-secondary);
+        }
+
+        .channel-messages {
+            flex: 1;
+            padding: 16px;
+            overflow-y: auto;
+            background: url('https://discord.com/assets/1c8a54b25d730ecd6bfff69895807195.svg') center/cover no-repeat;
+        }
+
+        .message {
+            display: flex;
+            margin-bottom: 16px;
+            padding: 8px;
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .message:hover {
+            background-color: rgba(4, 4, 5, 0.07);
+        }
+
+        .message-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 16px;
+            cursor: pointer;
+            flex-shrink: 0;
+        }
+
+        .message-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .message-content {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 4px;
+        }
+
+        .message-author {
+            font-weight: 500;
+            margin-right: 8px;
+            cursor: pointer;
+        }
+
+        .message-author:hover {
+            text-decoration: underline;
+        }
+
+        .message-timestamp {
+            color: var(--text-tertiary);
+            font-size: 12px;
+        }
+
+        .message-text {
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .message-actions {
+            display: flex;
+            margin-top: 8px;
+            opacity: 0;
+            transition: opacity 0.2s ease;
+            position: absolute;
+            right: 8px;
+            top: 8px;
+            background-color: var(--dark-bg);
+            border-radius: 4px;
+            padding: 4px;
+            box-shadow: 0 0 0 1px rgba(4, 4, 5, 0.15);
+        }
+
+        .message:hover .message-actions {
+            opacity: 1;
+        }
+
+        .message-action {
+            color: var(--text-tertiary);
+            font-size: 16px;
+            margin-right: 8px;
+            cursor: pointer;
+            padding: 4px;
+        }
+
+        .message-action:hover {
+            color: var(--text-secondary);
+            background-color: rgba(79, 84, 92, 0.16);
+            border-radius: 4px;
+        }
+
+        .message-reactions {
+            display: flex;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
+        .message-reaction {
+            display: flex;
+            align-items: center;
+            background-color: rgba(79, 84, 92, 0.3);
+            border-radius: 12px;
+            padding: 2px 6px;
+            margin-right: 8px;
+            margin-bottom: 4px;
+            cursor: pointer;
+        }
+
+        .message-reaction:hover {
+            background-color: rgba(79, 84, 92, 0.5);
+        }
+
+        .message-reaction-count {
+            margin-left: 4px;
+            font-size: 12px;
+        }
+
+        .channel-input {
+            padding: 16px;
+            background-color: var(--darker-bg);
+        }
+
+        .message-input-container {
+            position: relative;
+        }
+
+        .message-input {
+            width: 100%;
+            background-color: var(--dark-bg);
+            border: none;
+            border-radius: 8px;
+            padding: 12px 48px 12px 16px;
+            color: var(--text-primary);
+            font-size: 16px;
+            resize: none;
+            outline: none;
+            max-height: 200px;
+            min-height: 44px;
+        }
+
+        .message-input-buttons {
+            position: absolute;
+            right: 12px;
+            bottom: 12px;
+            display: flex;
+            align-items: center;
+        }
+
+        .message-input-buttons i {
+            color: var(--text-tertiary);
+            margin-left: 8px;
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .message-input-buttons i:hover {
+            color: var(--text-secondary);
+        }
+
+        /* Members sidebar */
+        .members-sidebar {
+            width: 240px;
+            background-color: var(--darker-bg);
+            padding: 16px;
+            overflow-y: auto;
+        }
+
+        .member-section {
+            margin-bottom: 24px;
+        }
+
+        .member-section-title {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 8px;
+        }
+
+        .member-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-bottom: 2px;
+        }
+
+        .member-item:hover {
+            background-color: rgba(79, 84, 92, 0.32);
+        }
+
+        .member-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+        }
+
+        .member-avatar img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+        }
+
+        .member-status {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            border: 2px solid var(--darker-bg);
+            position: absolute;
+            bottom: -2px;
+            right: -2px;
+        }
+
+        .member-status.online {
+            background-color: var(--online-color);
+        }
+
+        .member-status.idle {
+            background-color: var(--idle-color);
+        }
+
+        .member-status.dnd {
+            background-color: var(--dnd-color);
+        }
+
+        .member-status.offline {
+            background-color: var(--offline-color);
+        }
+
+        .member-name {
+            font-size: 14px;
+            color: var(--text-secondary);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .member-item:hover .member-name {
+            color: var(--text-primary);
+        }
+
+        .member-activity {
+            font-size: 12px;
+            color: var(--text-tertiary);
+            margin-top: 2px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #202225;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #1a1c1e;
+        }
+
+        /* Tooltip */
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 120px;
+            background-color: #111;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 125%;
+            left: 50%;
+            margin-left: -60px;
+            opacity: 0;
+            transition: opacity 0.3s;
+            font-size: 12px;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #111 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Modals */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.7);
+            z-index: 1000;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal {
+            background-color: var(--dark-bg);
+            border-radius: 8px;
+            width: 440px;
+            max-width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+        }
+
+        .modal-header {
+            padding: 16px;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+            position: relative;
+        }
+
+        .modal-title {
+            font-weight: 700;
+            font-size: 20px;
+            text-align: center;
+        }
+
+        .modal-close {
+            position: absolute;
+            right: 16px;
+            top: 16px;
+            color: var(--text-tertiary);
+            cursor: pointer;
+        }
+
+        .modal-close:hover {
+            color: var(--text-secondary);
+        }
+
+        .modal-body {
+            padding: 16px;
+        }
+
+        .modal-footer {
+            padding: 16px;
+            border-top: 1px solid rgba(0, 0, 0, 0.2);
+            display: flex;
+            justify-content: flex-end;
+        }
+
+        .btn {
+            padding: 10px 16px;
+            border-radius: 3px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .btn-secondary {
+            background-color: var(--darker-bg);
+            color: var(--text-primary);
+            margin-right: 8px;
+        }
+
+        .btn-secondary:hover {
+            background-color: rgba(79, 84, 92, 0.4);
+        }
+
+        .form-group {
+            margin-bottom: 16px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-tertiary);
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 10px;
+            background-color: var(--darker-bg);
+            border: 1px solid rgba(0, 0, 0, 0.3);
+            border-radius: 3px;
+            color: var(--text-primary);
+            font-size: 16px;
+        }
+
+        .form-control:focus {
+            border-color: var(--primary-color);
+        }
+
+        /* Responsive */
+        @media (max-width: 1200px) {
+            .members-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .channel-sidebar {
+                width: 72px;
+            }
+            
+            .channel-category span,
+            .channel-item span {
+                display: none;
+            }
+            
+            .channel-item {
+                justify-content: center;
+                padding: 8px;
+            }
+            
+            .channel-item i {
+                margin-right: 0;
+            }
+            
+            .user-info,
+            .user-controls {
+                display: none;
+            }
+
+            .channel-topic {
+                display: none;
+            }
+        }
+
+        /* Welcome screen */
+        .welcome-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--dark-bg);
+            padding: 20px;
+            text-align: center;
+        }
+
+        .welcome-logo {
+            font-size: 48px;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .welcome-title {
+            font-size: 24px;
+            margin-bottom: 16px;
+        }
+
+        .welcome-subtitle {
+            color: var(--text-tertiary);
+            margin-bottom: 32px;
+            max-width: 500px;
+        }
+
+        .welcome-buttons {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .welcome-btn {
+            padding: 12px 32px;
+            border-radius: 3px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            outline: none;
+        }
+
+        .welcome-btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        .welcome-btn-primary:hover {
+            background-color: var(--secondary-color);
+        }
+
+        .welcome-btn-secondary {
+            background-color: transparent;
+            color: var(--text-primary);
+            border: 1px solid var(--text-tertiary);
+        }
+
+        .welcome-btn-secondary:hover {
+            border-color: var(--text-secondary);
+        }
+
+        .welcome-footer {
+            color: var(--text-tertiary);
+            font-size: 12px;
+            margin-top: 32px;
+        }
+    </style>
+</head>
+<body>
+    <!-- Welcome Screen (shown when not authenticated) -->
+    <div class="welcome-container" id="welcomeScreen">
+        <div class="welcome-logo">
+            <i class="fas fa-comment-dots"></i>
+        </div>
+        <h1 class="welcome-title">Welcome to Convospace</h1>
+        <p class="welcome-subtitle">
+            Convospace is a Discord clone that brings your communities and friends together.
+            Create servers, chat in real-time, and stay connected.
+        </p>
+        <div class="welcome-buttons">
+            <button class="welcome-btn welcome-btn-primary" id="welcomeLoginBtn">Login</button>
+            <button class="welcome-btn welcome-btn-secondary" id="welcomeRegisterBtn">Register</button>
+        </div>
+        <div class="welcome-footer">
+            By continuing, you agree to our Terms of Service and Privacy Policy
+        </div>
+    </div>
+
+    <!-- Main App (shown when authenticated) -->
+    <div id="appContainer" style="display: none;">
+        <!-- Server sidebar -->
+        <div class="server-sidebar">
+            <div class="server-icon active">
+                <i class="fas fa-home"></i>
+                <div class="server-notification"></div>
+            </div>
+            <div class="server-separator"></div>
+            <div class="server-icon has-notification">
+                <img src="https://via.placeholder.com/32" alt="Server">
+                <div class="server-notification"></div>
+            </div>
+            <div class="server-icon">
+                <img src="https://via.placeholder.com/32" alt="Server">
+            </div>
+            <div class="server-icon">
+                <img src="https://via.placeholder.com/32" alt="Server">
+            </div>
+            <div class="server-icon">
+                <img src="https://via.placeholder.com/32" alt="Server">
+            </div>
+            <div class="server-icon add-server">
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="server-icon discover-servers">
+                <i class="fas fa-compass"></i>
+            </div>
+        </div>
+
+        <!-- Channel sidebar -->
+        <div class="channel-sidebar">
+            <div class="server-header">
+                <span>Convospace</span>
+                <i class="fas fa-chevron-down"></i>
+            </div>
+
+            <div class="channel-category">
+                <span>Text Channels</span>
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="channel-item active">
+                <i class="fas fa-hashtag"></i>
+                <span>general</span>
+            </div>
+            <div class="channel-item unread">
+                <i class="fas fa-hashtag"></i>
+                <span>random</span>
+            </div>
+            <div class="channel-item mention" data-mentions="3">
+                <i class="fas fa-hashtag"></i>
+                <span>help</span>
+            </div>
+
+            <div class="channel-category">
+                <span>Voice Channels</span>
+                <i class="fas fa-plus"></i>
+            </div>
+            <div class="channel-item">
+                <i class="fas fa-volume-up"></i>
+                <span>General</span>
+            </div>
+            <div class="channel-item">
+                <i class="fas fa-volume-up"></i>
+                <span>Gaming</span>
+            </div>
+            <div class="channel-item">
+                <i class="fas fa-volume-up"></i>
+                <span>Music</span>
+            </div>
+
+            <div class="user-section">
+                <div class="user-avatar">
+                    <img src="https://via.placeholder.com/32" alt="User">
+                    <div class="user-status"></div>
+                </div>
+                <div class="user-info">
+                    <div class="username">Username</div>
+                    <div class="user-tag">#1234</div>
+                </div>
+                <div class="user-controls">
+                    <i class="fas fa-microphone"></i>
+                    <i class="fas fa-headphones"></i>
+                    <i class="fas fa-cog"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="main-content">
+            <div class="channel-header">
+                <div class="channel-name">
+                    <i class="fas fa-hashtag"></i> general
+                </div>
+                <div class="channel-topic">
+                    Welcome to the general channel! This is where everyone can chat.
+                </div>
+                <div class="channel-toolbar">
+                    <i class="fas fa-search tooltip">
+                        <span class="tooltiptext">Search</span>
+                    </i>
+                    <i class="fas fa-inbox tooltip">
+                        <span class="tooltiptext">Inbox</span>
+                    </i>
+                    <i class="fas fa-question-circle tooltip">
+                        <span class="tooltiptext">Help</span>
+                    </i>
+                    <i class="fas fa-at tooltip">
+                        <span class="tooltiptext">Mentions</span>
+                    </i>
+                </div>
+            </div>
+
+            <div class="channel-messages" id="messageContainer">
+                <div class="message">
+                    <div class="message-avatar">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-author">JohnDoe</div>
+                            <div class="message-timestamp">Today at 12:34 PM</div>
+                        </div>
+                        <div class="message-text">
+                            Hey everyone! Welcome to our new Convospace server. Feel free to introduce yourself!
+                        </div>
+                        <div class="message-actions">
+                            <div class="message-action">
+                                <i class="far fa-smile"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                        <div class="message-reactions">
+                            <div class="message-reaction">
+                                <span>👍</span>
+                                <span class="message-reaction-count">3</span>
+                            </div>
+                            <div class="message-reaction">
+                                <span>😄</span>
+                                <span class="message-reaction-count">2</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message">
+                    <div class="message-avatar">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-author">JaneSmith</div>
+                            <div class="message-timestamp">Today at 12:45 PM</div>
+                        </div>
+                        <div class="message-text">
+                            Hi John! Thanks for setting this up. I'm Jane, a web developer from New York. Looking forward to chatting with everyone here!
+                        </div>
+                        <div class="message-actions">
+                            <div class="message-action">
+                                <i class="far fa-smile"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="message">
+                    <div class="message-avatar">
+                        <img src="https://via.placeholder.com/40" alt="User">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-author">AlexJohnson</div>
+                            <div class="message-timestamp">Today at 1:02 PM</div>
+                        </div>
+                        <div class="message-text">
+                            Hey folks! I'm Alex. This platform looks great. How's everyone doing today?
+                            <br><br>
+                            Also, check out this cool feature:
+                            <br>
+                            <code>console.log('Hello Convospace!');</code>
+                        </div>
+                        <div class="message-actions">
+                            <div class="message-action">
+                                <i class="far fa-smile"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="channel-input">
+                <div class="message-input-container">
+                    <textarea class="message-input" placeholder="Message #general" rows="1" id="messageInput"></textarea>
+                    <div class="message-input-buttons">
+                        <i class="fas fa-gift"></i>
+                        <i class="fas fa-grin"></i>
+                        <i class="fas fa-at"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Members sidebar -->
+        <div class="members-sidebar">
+            <div class="member-section">
+                <div class="member-section-title">Online — 3</div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status online"></div>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">JohnDoe</div>
+                        <div class="member-activity">Playing Rocket League</div>
+                    </div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status online"></div>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">JaneSmith</div>
+                        <div class="member-activity">Visual Studio Code</div>
+                    </div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status online"></div>
+                    </div>
+                    <div class="member-info">
+                        <div class="member-name">AlexJohnson</div>
+                        <div class="member-activity">Listening to Spotify</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="member-section">
+                <div class="member-section-title">Offline — 5</div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status offline"></div>
+                    </div>
+                    <div class="member-name">MikeBrown</div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status offline"></div>
+                    </div>
+                    <div class="member-name">SarahWilson</div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status offline"></div>
+                    </div>
+                    <div class="member-name">DavidLee</div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status offline"></div>
+                    </div>
+                    <div class="member-name">EmilyDavis</div>
+                </div>
+                <div class="member-item">
+                    <div class="member-avatar">
+                        <img src="https://via.placeholder.com/32" alt="User">
+                        <div class="member-status offline"></div>
+                    </div>
+                    <div class="member-name">ChrisTaylor</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Auth Modal -->
+    <div class="modal-overlay" id="authModal" style="display: none;">
+        <div class="modal">
+            <div class="modal-header">
+                <div class="modal-title" id="authModalTitle">Welcome back!</div>
+                <div class="modal-close" id="authModalClose">&times;</div>
+            </div>
+            <div class="modal-body">
+                <form id="authForm">
+                    <div class="form-group">
+                        <label for="authEmail" class="form-label">Email</label>
+                        <input type="email" class="form-control" id="authEmail" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="authPassword" class="form-label">Password</label>
+                        <input type="password" class="form-control" id="authPassword" required>
+                    </div>
+                    <div class="form-group" id="authUsernameGroup" style="display: none;">
+                        <label for="authUsername" class="form-label">Username</label>
+                        <input type="text" class="form-control" id="authUsername">
+                    </div>
+                    <div class="form-group" id="authError" style="color: var(--danger-color); display: none;"></div>
+                </form>
+                <div style="text-align: center; margin-top: 16px;">
+                    <a href="#" id="authSwitchMode">Need an account? Register</a>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="authCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="authSubmitBtn">Login</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- User Settings Modal -->
+    <div class="modal-overlay" id="settingsModal" style="display: none;">
+        <div class="modal" style="width: 600px;">
+            <div class="modal-header">
+                <div class="modal-title">User Settings</div>
+                <div class="modal-close" id="settingsModalClose">&times;</div>
+            </div>
+            <div class="modal-body">
+                <div style="display: flex;">
+                    <div style="width: 200px; border-right: 1px solid rgba(0, 0, 0, 0.2); padding-right: 16px;">
+                        <div style="padding: 8px; border-radius: 4px; background-color: var(--darker-bg); margin-bottom: 4px;">
+                            My Account
+                        </div>
+                        <div style="padding: 8px; border-radius: 4px; margin-bottom: 4px;">
+                            User Profile
+                        </div>
+                        <div style="padding: 8px; border-radius: 4px; margin-bottom: 4px;">
+                            Privacy & Safety
+                        </div>
+                        <div style="padding: 8px; border-radius: 4px; margin-bottom: 4px;">
+                            Notifications
+                        </div>
+                    </div>
+                    <div style="flex: 1; padding-left: 16px;">
+                        <h3 style="margin-bottom: 16px;">My Account</h3>
+                        
+                        <div style="display: flex; align-items: center; margin-bottom: 16px;">
+                            <div style="width: 80px; height: 80px; border-radius: 50%; background-color: var(--primary-color); display: flex; align-items: center; justify-content: center; margin-right: 16px;">
+                                <i class="fas fa-user" style="font-size: 32px;"></i>
+                            </div>
+                            <div>
+                                <div style="margin-bottom: 8px;">
+                                    <button class="btn btn-primary" style="padding: 6px 12px; font-size: 14px;">Change Avatar</button>
+                                </div>
+                                <div>
+                                    <button class="btn btn-secondary" style="padding: 6px 12px; font-size: 14px;">Remove Avatar</button>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="settingsUsername" class="form-label">Username</label>
+                            <input type="text" class="form-control" id="settingsUsername" value="Username">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="settingsTag" class="form-label">Tag</label>
+                            <input type="text" class="form-control" id="settingsTag" value="#1234">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="settingsEmail" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="settingsEmail" value="user@example.com">
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="settingsPassword" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="settingsPassword" placeholder="********">
+                        </div>
+                        
+                        <div style="margin-top: 32px;">
+                            <h4 style="margin-bottom: 8px;">Account Removal</h4>
+                            <button class="btn btn-secondary" style="background-color: var(--danger-color);">Delete Account</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-secondary" id="settingsCancelBtn">Cancel</button>
+                <button class="btn btn-primary" id="settingsSaveBtn">Save Changes</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Firebase configuration
+        const firebaseConfig = {
+            apiKey: "AIzaSyDd5TWvNy27-m3rT-3oKPPBg2ovdY8AsZE",
+            authDomain: "rblxwishlist.firebaseapp.com",
+            databaseURL: "https://rblxwishlist-default-rtdb.firebaseio.com",
+            projectId: "rblxwishlist",
+            storageBucket: "rblxwishlist.firebasestorage.app",
+            messagingSenderId: "542580370522",
+            appId: "1:542580370522:web:0b3c36c666e86c350a7c63",
+            measurementId: "G-ZHXG3999DY"
+        };
+
+        // Initialize Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const analytics = firebase.analytics();
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        // DOM elements
+        const welcomeScreen = document.getElementById('welcomeScreen');
+        const appContainer = document.getElementById('appContainer');
+        const welcomeLoginBtn = document.getElementById('welcomeLoginBtn');
+        const welcomeRegisterBtn = document.getElementById('welcomeRegisterBtn');
+        const authModal = document.getElementById('authModal');
+        const authModalTitle = document.getElementById('authModalTitle');
+        const authModalClose = document.getElementById('authModalClose');
+        const authForm = document.getElementById('authForm');
+        const authEmail = document.getElementById('authEmail');
+        const authPassword = document.getElementById('authPassword');
+        const authUsernameGroup = document.getElementById('authUsernameGroup');
+        const authUsername = document.getElementById('authUsername');
+        const authError = document.getElementById('authError');
+        const authSwitchMode = document.getElementById('authSwitchMode');
+        const authCancelBtn = document.getElementById('authCancelBtn');
+        const authSubmitBtn = document.getElementById('authSubmitBtn');
+        const messageInput = document.getElementById('messageInput');
+        const messageContainer = document.getElementById('messageContainer');
+        const settingsModal = document.getElementById('settingsModal');
+        const settingsModalClose = document.getElementById('settingsModalClose');
+        const settingsCancelBtn = document.getElementById('settingsCancelBtn');
+        const settingsSaveBtn = document.getElementById('settingsSaveBtn');
+        const cogIcon = document.querySelector('.fa-cog');
+
+        // App state
+        let isLoginMode = true;
+        let currentUser = null;
+
+        // Initialize the app
+        function init() {
+            setupEventListeners();
+            checkAuthState();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Welcome screen buttons
+            welcomeLoginBtn.addEventListener('click', () => showAuthModal(true));
+            welcomeRegisterBtn.addEventListener('click', () => showAuthModal(false));
+
+            // Auth modal
+            authModalClose.addEventListener('click', hideAuthModal);
+            authCancelBtn.addEventListener('click', hideAuthModal);
+            authSwitchMode.addEventListener('click', toggleAuthMode);
+            authSubmitBtn.addEventListener('click', handleAuthSubmit);
+            authForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+                handleAuthSubmit();
+            });
+
+            // Message input
+            messageInput.addEventListener('keydown', (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+
+            // Settings modal
+            cogIcon.addEventListener('click', () => {
+                settingsModal.style.display = 'flex';
+            });
+            settingsModalClose.addEventListener('click', () => {
+                settingsModal.style.display = 'none';
+            });
+            settingsCancelBtn.addEventListener('click', () => {
+                settingsModal.style.display = 'none';
+            });
+            settingsSaveBtn.addEventListener('click', saveSettings);
+        }
+
+        // Check auth state
+        function checkAuthState() {
+            auth.onAuthStateChanged((user) => {
+                if (user) {
+                    // User is signed in
+                    currentUser = user;
+                    welcomeScreen.style.display = 'none';
+                    appContainer.style.display = 'flex';
+                    loadUserData(user.uid);
+                    analytics.logEvent('login');
+                } else {
+                    // User is signed out
+                    currentUser = null;
+                    welcomeScreen.style.display = 'flex';
+                    appContainer.style.display = 'none';
+                }
+            });
+        }
+
+        // Show auth modal
+        function showAuthModal(login) {
+            isLoginMode = login;
+            authModalTitle.textContent = login ? 'Welcome back!' : 'Create an account';
+            authSubmitBtn.textContent = login ? 'Login' : 'Register';
+            authSwitchMode.textContent = login ? 'Need an account? Register' : 'Already have an account? Login';
+            authUsernameGroup.style.display = login ? 'none' : 'block';
+            authError.style.display = 'none';
+            authModal.style.display = 'flex';
+        }
+
+        // Hide auth modal
+        function hideAuthModal() {
+            authModal.style.display = 'none';
+            authEmail.value = '';
+            authPassword.value = '';
+            authUsername.value = '';
+            authError.style.display = 'none';
+        }
+
+        // Toggle auth mode
+        function toggleAuthMode(e) {
+            e.preventDefault();
+            showAuthModal(!isLoginMode);
+        }
+
+        // Handle auth submit
+        function handleAuthSubmit() {
+            const email = authEmail.value;
+            const password = authPassword.value;
+            const username = authUsername.value;
+
+            authError.style.display = 'none';
+
+            if (isLoginMode) {
+                // Login
+                auth.signInWithEmailAndPassword(email, password)
+                    .then(() => {
+                        hideAuthModal();
+                    })
+                    .catch((error) => {
+                        authError.textContent = error.message;
+                        authError.style.display = 'block';
+                    });
+            } else {
+                // Register
+                if (!username) {
+                    authError.textContent = 'Username is required';
+                    authError.style.display = 'block';
+                    return;
+                }
+
+                auth.createUserWithEmailAndPassword(email, password)
+                    .then((userCredential) => {
+                        // Save additional user data
+                        return database.ref('users/' + userCredential.user.uid).set({
+                            username: username,
+                            email: email,
+                            createdAt: firebase.database.ServerValue.TIMESTAMP,
+                            tag: Math.floor(1000 + Math.random() * 9000) // Random 4-digit tag
+                        });
+                    })
+                    .then(() => {
+                        hideAuthModal();
+                    })
+                    .catch((error) => {
+                        authError.textContent = error.message;
+                        authError.style.display = 'block';
+                    });
+            }
+        }
+
+        // Load user data
+        function loadUserData(userId) {
+            database.ref('users/' + userId).on('value', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData) {
+                    // Update UI with user data
+                    const usernameElements = document.querySelectorAll('.username');
+                    usernameElements.forEach(el => {
+                        el.textContent = userData.username;
+                    });
+
+                    const tagElements = document.querySelectorAll('.user-tag');
+                    tagElements.forEach(el => {
+                        el.textContent = '#' + userData.tag;
+                    });
+                }
+            });
+
+            // Load messages
+            database.ref('messages/general').on('value', (snapshot) => {
+                const messages = snapshot.val() || [];
+                renderMessages(messages);
+            });
+        }
+
+        // Render messages
+        function renderMessages(messages) {
+            messageContainer.innerHTML = '';
+            
+            messages.forEach((message, index) => {
+                const messageElement = document.createElement('div');
+                messageElement.className = 'message';
+                messageElement.innerHTML = `
+                    <div class="message-avatar">
+                        <img src="${message.avatar || 'https://via.placeholder.com/40'}" alt="User">
+                    </div>
+                    <div class="message-content">
+                        <div class="message-header">
+                            <div class="message-author">${message.author}</div>
+                            <div class="message-timestamp">${formatTimestamp(message.timestamp)}</div>
+                        </div>
+                        <div class="message-text">${message.text}</div>
+                        <div class="message-actions">
+                            <div class="message-action">
+                                <i class="far fa-smile"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-reply"></i>
+                            </div>
+                            <div class="message-action">
+                                <i class="fas fa-ellipsis-h"></i>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                messageContainer.appendChild(messageElement);
+            });
+
+            // Scroll to bottom
+            messageContainer.scrollTop = messageContainer.scrollHeight;
+        }
+
+        // Format timestamp
+        function formatTimestamp(timestamp) {
+            if (!timestamp) return '';
+            const date = new Date(timestamp);
+            return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Send message
+        function sendMessage() {
+            const text = messageInput.value.trim();
+            if (!text || !currentUser) return;
+
+            // Get username
+            database.ref('users/' + currentUser.uid).once('value')
+                .then((snapshot) => {
+                    const userData = snapshot.val();
+                    const username = userData?.username || 'Anonymous';
+
+                    // Push new message
+                    return database.ref('messages/general').push({
+                        author: username,
+                        text: text,
+                        timestamp: firebase.database.ServerValue.TIMESTAMP,
+                        uid: currentUser.uid
+                    });
+                })
+                .then(() => {
+                    messageInput.value = '';
+                    messageInput.style.height = 'auto';
+                })
+                .catch((error) => {
+                    console.error('Error sending message:', error);
+                });
+        }
+
+        // Save settings
+        function saveSettings() {
+            if (!currentUser) return;
+
+            const updates = {};
+            const username = document.getElementById('settingsUsername').value;
+            const tag = document.getElementById('settingsTag').value;
+            const email = document.getElementById('settingsEmail').value;
+            const password = document.getElementById('settingsPassword').value;
+
+            if (username) {
+                updates['username'] = username;
+            }
+
+            if (tag) {
+                updates['tag'] = tag.replace('#', '');
+            }
+
+            if (email && email !== currentUser.email) {
+                currentUser.updateEmail(email)
+                    .then(() => {
+                        updates['email'] = email;
+                        return database.ref('users/' + currentUser.uid).update(updates);
+                    })
+                    .then(() => {
+                        settingsModal.style.display = 'none';
+                    })
+                    .catch((error) => {
+                        console.error('Error updating email:', error);
+                    });
+            }
+
+            if (password) {
+                currentUser.updatePassword(password)
+                    .then(() => {
+                        document.getElementById('settingsPassword').value = '';
+                    })
+                    .catch((error) => {
+                        console.error('Error updating password:', error);
+                    });
+            }
+
+            if (Object.keys(updates).length > 0) {
+                database.ref('users/' + currentUser.uid).update(updates)
+                    .then(() => {
+                        settingsModal.style.display = 'none';
+                    });
+            } else {
+                settingsModal.style.display = 'none';
+            }
+        }
+
+        // Auto-resize textarea
+        messageInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = (this.scrollHeight) + 'px';
+        });
+
+        // Initialize the app
+        init();
+    </script>
+</body>
+</html>
