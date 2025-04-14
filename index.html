@@ -4,7 +4,350 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ConvoSpace</title>
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --light-gray: #e9ecef;
+            --success: #4cc9f0;
+            --danger: #f72585;
+            --warning: #f8961e;
+            --border-radius: 8px;
+            --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f5f7fb;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        /* Auth Section */
+        #auth-section {
+            max-width: 500px;
+            margin: 50px auto;
+            padding: 40px;
+            background: white;
+            border-radius: var(--border-radius);
+            box-shadow: var(--box-shadow);
+            text-align: center;
+        }
+
+        #auth-section h1 {
+            color: var(--primary);
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            text-align: left;
+        }
+
+        .input-group label {
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        input, textarea {
+            padding: 12px 15px;
+            border: 1px solid var(--light-gray);
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            transition: var(--transition);
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+        }
+
+        .btn {
+            padding: 12px 20px;
+            border: none;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--light-gray);
+            color: var(--dark);
+        }
+
+        .btn-secondary:hover {
+            background-color: #d1d7e0;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e5177b;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .btn-group .btn {
+            flex: 1;
+        }
+
+        /* User Info Section */
+        #user-info {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 30px;
+            margin-top: 30px;
+        }
+
+        .sidebar {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+            height: fit-content;
+        }
+
+        .main-content {
+            background: white;
+            border-radius: var(--border-radius);
+            padding: 20px;
+            box-shadow: var(--box-shadow);
+        }
+
+        h2, h3 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        h2 {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h3 {
+            font-size: 1.4rem;
+            margin-top: 30px;
+        }
+
+        .user-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid var(--light-gray);
+        }
+
+        /* Communities */
+        #communities-list {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .community {
+            padding: 12px 15px;
+            background-color: var(--light);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: var(--transition);
+            font-weight: 500;
+        }
+
+        .community:hover {
+            background-color: var(--light-gray);
+        }
+
+        .community.active {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        /* Posts */
+        .post-form {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+            background: var(--light);
+            padding: 20px;
+            border-radius: var(--border-radius);
+        }
+
+        .post-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .file-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-input label {
+            padding: 8px 12px;
+            background: var(--light-gray);
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: var(--transition);
+        }
+
+        .file-input label:hover {
+            background: #d1d7e0;
+        }
+
+        #posts-list {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .post {
+            background: var(--light);
+            padding: 20px;
+            border-radius: var(--border-radius);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .post-content {
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .post-meta {
+            display: flex;
+            justify-content: space-between;
+            color: var(--gray);
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+
+        .post-image {
+            max-width: 100%;
+            max-height: 300px;
+            border-radius: var(--border-radius);
+            margin-top: 15px;
+            display: block;
+        }
+
+        .comments {
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid var(--light-gray);
+        }
+
+        .comment {
+            background: white;
+            padding: 10px 15px;
+            border-radius: var(--border-radius);
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+        }
+
+        .comment-form {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .comment-form input {
+            flex: 1;
+            padding: 10px 15px;
+        }
+
+        .comment-form button {
+            padding: 10px 15px;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            #user-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn-group {
+                flex-direction: column;
+            }
+        }
+
+        /* Animations */
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .fade-in {
+            animation: fadeIn 0.3s ease-out forwards;
+        }
+
+        /* Utility Classes */
+        .mt-10 { margin-top: 10px; }
+        .mt-20 { margin-top: 20px; }
+        .mb-10 { margin-bottom: 10px; }
+        .mb-20 { margin-bottom: 20px; }
+        .text-muted { color: var(--gray); }
+        .text-center { text-align: center; }
+    </style>
     <!-- Firebase SDKs -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
@@ -86,6 +429,7 @@
                     })
                     .catch((error) => {
                         console.error("Error registering user:", error);
+                        alert("Registration failed: " + error.message);
                     });
             }
         });
@@ -101,6 +445,7 @@
                     })
                     .catch((error) => {
                         console.error("Error logging in:", error);
+                        alert("Login failed: " + error.message);
                     });
             }
         });
@@ -111,6 +456,7 @@
                 showUserInfo(userCredential.user, "Anonymous User");
             }).catch((error) => {
                 console.error("Error logging in anonymously:", error);
+                alert("Anonymous login failed: " + error.message);
             });
         });
 
@@ -134,6 +480,7 @@
                     fetchCommunities();  // Refresh the community list
                 }).catch((error) => {
                     console.error("Error creating community:", error);
+                    alert("Failed to create community: " + error.message);
                 });
             }
         });
@@ -149,6 +496,12 @@
                     communityDiv.className = "community";
                     // Join community on click
                     communityDiv.addEventListener('click', () => {
+                        // Remove active class from all communities
+                        document.querySelectorAll('.community').forEach(c => {
+                            c.classList.remove('active');
+                        });
+                        // Add active class to clicked community
+                        communityDiv.classList.add('active');
                         joinCommunity(community.name);
                     });
                     communitiesList.appendChild(communityDiv);
@@ -169,23 +522,46 @@
         function fetchPosts(communityName) {
             get(ref(db, 'posts/' + communityName)).then((snapshot) => {
                 postsList.innerHTML = '';
+                if (!snapshot.exists()) {
+                    postsList.innerHTML = '<p class="text-muted text-center">No posts yet. Be the first to post!</p>';
+                    return;
+                }
+                
                 snapshot.forEach((childSnapshot) => {
                     const post = childSnapshot.val();
                     const postId = childSnapshot.key;
 
                     const postElement = document.createElement('div');
-                    postElement.className = 'post';
-                    const textElement = document.createElement('p');
-                    const userElement = document.createElement('span');
+                    postElement.className = 'post fade-in';
+                    
+                    const postContent = document.createElement('div');
+                    postContent.className = 'post-content';
+                    postContent.innerHTML = formatPostContent(post.content);
+                    
+                    const postMeta = document.createElement('div');
+                    postMeta.className = 'post-meta';
+                    postMeta.innerHTML = `
+                        <span>Posted by: <strong>${post.username}</strong></span>
+                        <span class="text-muted">${new Date().toLocaleString()}</span>
+                    `;
+                    
+                    const commentsSection = document.createElement('div');
+                    commentsSection.className = 'comments';
+                    
                     const commentsList = document.createElement('div');
+                    commentsList.className = 'comments-list';
+                    
+                    const commentForm = document.createElement('div');
+                    commentForm.className = 'comment-form';
+                    
                     const commentInput = document.createElement('input');
+                    commentInput.type = 'text';
+                    commentInput.placeholder = 'Write a comment...';
+                    
                     const commentButton = document.createElement('button');
-
-                    textElement.innerHTML = formatPostContent(post.content);
-                    userElement.textContent = `Posted by: ${post.username}`;
-                    commentInput.placeholder = 'Add a comment...';
-                    commentButton.textContent = 'Comment';
-
+                    commentButton.className = 'btn btn-primary';
+                    commentButton.innerHTML = '<i class="fas fa-paper-plane"></i>';
+                    
                     // Comment functionality
                     commentButton.addEventListener('click', () => {
                         const comment = commentInput.value.trim();
@@ -195,7 +571,7 @@
                             const newCommentRef = push(commentRef);  // Use push to generate a unique key
                             set(newCommentRef, {
                                 content: comment,
-                                username: post.username
+                                username: userNameSpan.textContent
                             }).then(() => {
                                 commentInput.value = '';
                                 fetchComments(postId, commentsList);  // Refresh comments
@@ -203,13 +579,26 @@
                         }
                     });
 
+                    // Add image if exists
+                    if (post.imageUrl) {
+                        const postImage = document.createElement('img');
+                        postImage.src = post.imageUrl;
+                        postImage.className = 'post-image';
+                        postContent.appendChild(postImage);
+                    }
+
                     fetchComments(postId, commentsList);  // Fetch comments for the post
 
-                    postElement.appendChild(textElement);
-                    postElement.appendChild(userElement);
-                    postElement.appendChild(commentInput);
-                    postElement.appendChild(commentButton);
-                    postElement.appendChild(commentsList);
+                    commentForm.appendChild(commentInput);
+                    commentForm.appendChild(commentButton);
+                    
+                    commentsSection.appendChild(commentsList);
+                    commentsSection.appendChild(commentForm);
+                    
+                    postElement.appendChild(postContent);
+                    postElement.appendChild(postMeta);
+                    postElement.appendChild(commentsSection);
+                    
                     postsList.appendChild(postElement);
                 });
             }).catch((error) => {
@@ -221,10 +610,17 @@
         function fetchComments(postId, commentsList) {
             get(ref(db, 'comments/' + postId)).then((snapshot) => {
                 commentsList.innerHTML = '';
+                if (!snapshot.exists()) {
+                    return;
+                }
+                
                 snapshot.forEach((childSnapshot) => {
                     const comment = childSnapshot.val();
                     const commentElement = document.createElement('div');
-                    commentElement.textContent = `${comment.username}: ${comment.content}`;
+                    commentElement.className = 'comment fade-in';
+                    commentElement.innerHTML = `
+                        <strong>${comment.username}</strong>: ${comment.content}
+                    `;
                     commentsList.appendChild(commentElement);
                 });
             }).catch((error) => {
@@ -247,13 +643,15 @@
                 set(newPostRef, {
                     content: content,
                     username: username,
-                    imageUrl: imageUrl
+                    imageUrl: imageUrl,
+                    timestamp: Date.now()
                 }).then(() => {
                     postInput.value = '';
                     postImageInput.value = '';
                     fetchPosts(communityName);  // Refresh posts
                 }).catch((error) => {
                     console.error("Error posting content:", error);
+                    alert("Failed to post: " + error.message);
                 });
             }
         });
@@ -265,9 +663,13 @@
 
             if (hashtags) {
                 hashtags.forEach((hashtag) => {
-                    formattedContent = formattedContent.replace(hashtag, `<a href="#">${hashtag}</a>`);
+                    formattedContent = formattedContent.replace(hashtag, `<a href="#" class="hashtag">${hashtag}</a>`);
                 });
             }
+            
+            // Convert line breaks to <br> tags
+            formattedContent = formattedContent.replace(/\n/g, '<br>');
+            
             return formattedContent;
         }
 
@@ -278,35 +680,57 @@
     </script>
 </head>
 <body>
-    <div id="auth-section">
-        <h1>Welcome to ConvoSpace</h1>
-        <label for="username-input">Choose a username:</label>
-        <input type="text" id="username-input" placeholder="Enter username">
-        <button id="register-button">Register</button>
-        <button id="login-button">Login</button>
-        <button id="login-anonymous">Login Anonymously</button>
-    </div>
+    <div class="container">
+        <div id="auth-section">
+            <h1><i class="fas fa-comments"></i> ConvoSpace</h1>
+            <div class="auth-form">
+                <div class="input-group">
+                    <label for="username-input">Choose a username</label>
+                    <input type="text" id="username-input" placeholder="Enter username">
+                </div>
+                <div class="btn-group">
+                    <button id="register-button" class="btn btn-primary"><i class="fas fa-user-plus"></i> Register</button>
+                    <button id="login-button" class="btn btn-secondary"><i class="fas fa-sign-in-alt"></i> Login</button>
+                </div>
+                <button id="login-anonymous" class="btn btn-secondary"><i class="fas fa-user-secret"></i> Login Anonymously</button>
+            </div>
+        </div>
 
-    <div id="user-info" class="hidden">
-        <h2>Hello, <span id="user-name"></span>!</h2>
-        <button id="logout">Logout</button>
+        <div id="user-info" class="hidden">
+            <div class="user-header">
+                <h2><i class="fas fa-user"></i> <span id="user-name"></span></h2>
+                <button id="logout" class="btn btn-danger"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            </div>
 
-        <h3>Create a Community</h3>
-        <input type="text" id="community-name" placeholder="Community Name">
-        <button id="create-community">Create</button>
+            <div class="sidebar">
+                <h3><i class="fas fa-plus-circle"></i> Create Community</h3>
+                <div class="input-group">
+                    <input type="text" id="community-name" placeholder="Community Name">
+                    <button id="create-community" class="btn btn-primary mt-10"><i class="fas fa-plus"></i> Create</button>
+                </div>
 
-        <h3>Communities</h3>
-        <div id="communities-list"></div>
+                <h3 class="mt-20"><i class="fas fa-users"></i> Communities</h3>
+                <div id="communities-list" class="mt-10"></div>
+            </div>
 
-        <h3 id="current-community-name"></h3>
-        <div id="community-post-section" class="hidden">
-            <h3>Post in Community</h3>
-            <textarea id="post-input" placeholder="What's on your mind?"></textarea>
-            <input type="file" id="post-image" accept="image/*">
-            <button id="post-button">Post</button>
-            <h3>Posts</h3>
-            <div id="posts-list"></div>
+            <div class="main-content">
+                <div id="community-post-section" class="hidden">
+                    <h3><i class="fas fa-comment-dots"></i> <span id="current-community-name"></span></h3>
+                    
+                    <div class="post-form">
+                        <textarea id="post-input" placeholder="What's on your mind?"></textarea>
+                        <div class="file-input">
+                            <label for="post-image"><i class="fas fa-image"></i> Add Image</label>
+                            <input type="file" id="post-image" accept="image/*" style="display: none;">
+                        </div>
+                        <button id="post-button" class="btn btn-primary"><i class="fas fa-paper-plane"></i> Post</button>
+                    </div>
+
+                    <h3><i class="fas fa-stream"></i> Posts</h3>
+                    <div id="posts-list"></div>
+                </div>
+            </div>
         </div>
     </div>
 </body>
-
+</html>
